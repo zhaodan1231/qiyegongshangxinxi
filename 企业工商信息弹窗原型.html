@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>校园招聘岗位详情 - 企业工商信息弹窗原型</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  background: #f5f7fa;
+  color: #333;
+  font-size: 14px;
+}
+
+/* 顶部导航 */
+.top-nav {
+  background: linear-gradient(135deg, #1890ff 0%, #096dd9 100%);
+  padding: 0 24px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.top-nav .logo { color: #fff; font-size: 18px; font-weight: 600; }
+.top-nav .nav-tabs { display: flex; gap: 4px; flex: 1; margin-left: 40px; overflow-x: auto; }
+.top-nav .nav-tab {
+  padding: 8px 14px;
+  color: rgba(255,255,255,0.85);
+  font-size: 13px;
+  cursor: pointer;
+  border-radius: 4px;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+.top-nav .nav-tab:hover { background: rgba(255,255,255,0.15); color: #fff; }
+.top-nav .nav-tab.active { background: rgba(255,255,255,0.25); color: #fff; font-weight: 500; }
+.top-nav .user-info { color: #fff; font-size: 14px; display: flex; align-items: center; gap: 8px; }
+.top-nav .user-info .avatar {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: rgba(255,255,255,0.25);
+  display: flex; align-items: center; justify-content: center; font-size: 14px;
+}
+
+/* 面包屑 */
+.breadcrumb { padding: 12px 24px; font-size: 13px; color: #999; }
+.breadcrumb a { color: #1890ff; text-decoration: none; }
+.breadcrumb span { margin: 0 6px; }
+
+/* 主体区域 */
+.main-content {
+  padding: 0 24px 40px;
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  gap: 20px;
+}
+
+/* 左侧岗位详情 */
+.job-detail { flex: 1; min-width: 0; }
+.job-header {
+  background: #fff;
+  border-radius: 8px;
+  padding: 24px;
+  margin-bottom: 16px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  position: relative;
+}
+.job-title { font-size: 24px; font-weight: 600; color: #333; margin-bottom: 12px; }
+.job-tags { display: flex; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+.job-tag { font-size: 13px; color: #666; }
+.job-tag::before { content: "|"; margin-right: 12px; color: #e8e8e8; }
+.job-tag:first-child::before { display: none; }
+.job-meta { display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: #666; }
+.job-update { font-size: 12px; color: #999; margin-top: 8px; }
+.follow-btn {
+  position: absolute;
+  top: 24px; right: 24px;
+  padding: 8px 20px;
+  border: 1px solid #fa8c16;
+  border-radius: 4px;
+  background: #fff;
+  color: #fa8c16;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.follow-btn:hover { background: #fff7e6; }
+
+.job-content {
+  background: #fff;
+  border-radius: 8px;
+  padding: 24px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+.job-section { margin-bottom: 24px; }
+.job-section:last-child { margin-bottom: 0; }
+.job-section-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 12px;
+  padding-left: 8px;
+  border-left: 3px solid #1890ff;
+}
+.job-section-content { font-size: 13px; color: #666; line-height: 1.8; }
+.job-section-content ol { padding-left: 20px; }
+.job-section-content li { margin-bottom: 8px; }
+.apply-btn {
+  display: block;
+  margin: 24px auto 0;
+  padding: 10px 40px;
+  border: none;
+  border-radius: 4px;
+  background: linear-gradient(135deg, #1890ff 0%, #096dd9 100%);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 2px 8px rgba(24,144,255,0.3);
+}
+.apply-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(24,144,255,0.4); }
+
+/* 右侧企业信息 */
+.company-sidebar { width: 340px; flex-shrink: 0; }
+.company-card {
+  background: #fff;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  margin-bottom: 16px;
+}
+.company-card-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.company-card-title::before {
+  content: "";
+  width: 4px; height: 16px;
+  background: #1890ff;
+  border-radius: 2px;
+}
+.company-info { display: flex; gap: 12px; margin-bottom: 12px; }
+.company-logo {
+  width: 48px; height: 48px;
+  background: #1a3a6c;
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-weight: bold; font-size: 18px;
+  flex-shrink: 0;
+}
+.company-name { font-size: 14px; font-weight: 600; color: #333; line-height: 1.4; }
+.company-tags { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+.company-tag { font-size: 12px; color: #999; }
+.company-tag::after { content: "|"; margin-left: 8px; color: #e8e8e8; }
+.company-tag:last-child::after { display: none; }
+
+/* 查看企业工商信息按钮 */
+.qcc-btn, .tyc-btn {
+  width: 100%;
+  padding: 10px 16px;
+  border: 1px solid #1890ff;
+  border-radius: 4px;
+  background: #fff;
+  color: #1890ff;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 8px;
+}
+.qcc-btn:hover, .tyc-btn:hover { background: #e6f0ff; }
+.btn-source {
+  text-align: center;
+  font-size: 12px;
+  color: #999;
+  margin-top: 6px;
+}
+
+/* 弹窗遮罩 */
+.modal-mask {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 1000;
+  justify-content: center;
+  align-items: center;
+}
+.modal-mask.show { display: flex; }
+.modal {
+  background: #fff;
+  border-radius: 8px;
+  width: 800px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  animation: modalFadeIn 0.2s ease;
+}
+@keyframes modalFadeIn {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.modal-header {
+  background: #f0f7ff;
+  padding: 16px 20px;
+  border-radius: 8px 8px 0 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-shrink: 0;
+}
+.modal-title { font-size: 16px; font-weight: 600; color: #1890ff; }
+.modal-subtitle { font-size: 12px; color: #999; margin-top: 4px; }
+.modal-close {
+  width: 28px; height: 28px;
+  border: none;
+  background: transparent;
+  color: #999;
+  font-size: 20px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.2s;
+  line-height: 1;
+}
+.modal-close:hover { background: #e6f0ff; color: #1890ff; }
+.modal-body {
+  padding: 20px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* 字段分组 */
+.field-group {
+  border: 1px solid #e8e8e8;
+  border-radius: 6px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+.field-group:last-child { margin-bottom: 0; }
+.field-group-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 14px;
+  padding-left: 8px;
+  border-left: 3px solid #1890ff;
+  line-height: 1;
+}
+.field-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px 20px;
+}
+.field-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.field-label { font-size: 13px; color: #666; }
+.field-value { font-size: 13px; color: #333; font-weight: 500; line-height: 1.6; }
+.field-value .level-name { color: #666; font-weight: 600; }
+.field-value.empty { color: #ccc; }
+
+/* 技术说明折叠区域 */
+.tech-doc {
+  border: 1px solid #e8e8e8;
+  border-radius: 6px;
+  margin-top: 16px;
+  overflow: hidden;
+}
+.tech-doc-header {
+  background: #fafafa;
+  padding: 10px 16px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  font-weight: 500;
+  color: #666;
+  transition: background 0.2s;
+}
+.tech-doc-header:hover { background: #f0f0f0; }
+.tech-doc-arrow { transition: transform 0.2s; }
+.tech-doc.open .tech-doc-arrow { transform: rotate(180deg); }
+.tech-doc-body {
+  display: none;
+  padding: 16px;
+  border-top: 1px solid #e8e8e8;
+}
+.tech-doc.open .tech-doc-body { display: block; }
+.tech-doc-section { margin-bottom: 16px; }
+.tech-doc-section:last-child { margin-bottom: 0; }
+.tech-doc-section-title { font-size: 13px; font-weight: 600; color: #333; margin-bottom: 8px; }
+.tech-doc-text { font-size: 12px; color: #666; line-height: 1.8; }
+.tech-doc-fee-list { font-size: 12px; color: #666; line-height: 2; padding-left: 16px; }
+.tech-doc-table-wrap { overflow-x: auto; }
+.tech-doc-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+.tech-doc-table th, .tech-doc-table td {
+  border: 1px solid #e8e8e8;
+  padding: 6px 8px;
+  text-align: left;
+}
+.tech-doc-table th { background: #f5f5f5; font-weight: 600; color: #333; }
+.tech-doc-table td { color: #666; }
+</style>
+</head>
+<body>
+
+<!-- 顶部导航 -->
+<div class="top-nav">
+  <div class="logo">高质量充分就业引擎</div>
+  <div class="nav-tabs">
+    <div class="nav-tab">求职准备最优计划</div>
+    <div class="nav-tab">求职深度指导课程</div>
+    <div class="nav-tab">求职综合能力特训</div>
+    <div class="nav-tab">招聘测试完备题库训练</div>
+    <div class="nav-tab">应聘与录用意向进度</div>
+    <div class="nav-tab">就业目标认知与基本适配</div>
+    <div class="nav-tab">人岗智能双向精准匹配</div>
+    <div class="nav-tab active">校园招聘信息优化总库</div>
+    <div class="nav-tab">校园招聘会统合平台</div>
+    <div class="nav-tab">最优模型简历创作</div>
+  </div>
+  <div class="user-info">
+    <div class="avatar">赵</div>
+    <span>赵丹</span>
+  </div>
+</div>
+
+<!-- 面包屑 -->
+<div class="breadcrumb">
+  <a href="#">首页</a><span>›</span><a href="#">校园招聘信息优化总库</a><span>›</span>岗位信息
+</div>
+
+<!-- 主体区域 -->
+<div class="main-content">
+  <!-- 左侧岗位详情 -->
+  <div class="job-detail">
+    <div class="job-header">
+      <div class="job-title">[校招]机械工程师</div>
+      <div class="job-tags">
+        <span class="job-tag">地区不限</span>
+        <span class="job-tag">校招</span>
+        <span class="job-tag">产品研发</span>
+      </div>
+      <div class="job-meta">
+        <div>学历：本科及以上</div>
+        <div>专业：机械类 / 机械设计制造类</div>
+        <div>毕业年份：不限</div>
+      </div>
+      <div class="job-update">更新于2026-08-14</div>
+      <button class="follow-btn">☆ 关注岗位</button>
+    </div>
+
+    <div class="job-content">
+      <div class="job-section">
+        <div class="job-section-title">综合薪酬</div>
+        <div class="job-section-content">面议</div>
+      </div>
+      <div class="job-section">
+        <div class="job-section-title">办公地址</div>
+        <div class="job-section-content">广东省东莞市松山湖工业西一路酷派产业园2号厂房2单元；香港特别行政区，新界青衣担干山路64号</div>
+      </div>
+      <div class="job-section">
+        <div class="job-section-title">岗位描述</div>
+        <div class="job-section-content">
+          <p style="margin-bottom:8px;font-weight:600;">岗位职责：</p>
+          <ol>
+            <li>负责水下机器人新产品研发的机械结构总体方案设计；</li>
+            <li>主导关键零组件、传动机构、液压密封及流体动力模块的设计、选型与验证；</li>
+            <li>熟悉生产工艺与材料性能，全程参与样机的试制、装配与测试，并基于测试结果推动设计优化；</li>
+            <li>为生产环节提供技术指导，协同生产、质检等部门共同推进产品品质控制与问题闭环；</li>
+            <li>负责水下机器人产品的安装调试、现场技术支持、试验验证及持续优化升级。</li>
+          </ol>
+          <p style="margin:16px 0 8px;font-weight:600;">任职要求：</p>
+          <ol>
+            <li>本科及以上学历，机械设计制造及其自动化、机械工程、机电一体化等相关专业，专业基础扎实；</li>
+            <li>熟练掌握机械设计相关理论与相关工具；</li>
+            <li>具备工业产品、水下产品（有水下机器人、水下作业装备、水下检测设备）或相关领域产品开发经验者优先；</li>
+            <li>具备良好的团队协作意识与沟通能力，能主动协同部门推进项目进展，适应项目节奏，具备一定抗压能力。</li>
+          </ol>
+        </div>
+      </div>
+      <div class="job-section">
+        <div class="job-section-title">招聘人数</div>
+        <div class="job-section-content">若干</div>
+      </div>
+      <button class="apply-btn">岗位申请</button>
+    </div>
+  </div>
+
+  <!-- 右侧企业信息 -->
+  <div class="company-sidebar">
+    <div class="company-card">
+      <div class="company-card-title">企业信息</div>
+      <div class="company-info">
+        <div class="company-logo">S</div>
+        <div>
+          <div class="company-name">广东深蓝水下特种设备科技有限公司</div>
+          <div class="company-tags">
+            <span class="company-tag">电子设备制造</span>
+            <span class="company-tag">民企</span>
+            <span class="company-tag">微型(1~99人)</span>
+          </div>
+        </div>
+      </div>
+      <button class="qcc-btn" onclick="openModal('qccModal')">查看企业工商信息</button>
+      <div class="btn-source">数据来源：启信宝</div>
+      <button class="tyc-btn" onclick="openModal('tycModal')" style="margin-top:12px;">查看企业工商信息</button>
+      <div class="btn-source">数据来源：天眼查</div>
+    </div>
+  </div>
+</div>
+
+<!-- 启信宝弹窗 -->
+<div class="modal-mask" id="qccModal" onclick="closeModalMask(event, 'qccModal')">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title">企业工商信息</div>
+        <div class="modal-subtitle">数据来源：启信宝</div>
+      </div>
+      <button class="modal-close" onclick="closeModal('qccModal')">×</button>
+    </div>
+    <div class="modal-body">
+      <!-- 企业基本信息 -->
+      <div class="field-group">
+        <div class="field-group-title">企业基本信息</div>
+        <div class="field-grid">
+          <div class="field-item">
+            <div class="field-label">企业名称</div>
+            <div class="field-value">广东深蓝水下特种设备科技有限公司</div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">组织机构代码</div>
+            <div class="field-value">MA5XXXXXX</div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">企业类型</div>
+            <div class="field-value">有限责任公司</div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">企业性质</div>
+            <div class="field-value">民营企业</div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">组织机构分类（经济类型）</div>
+            <div class="field-value">内资企业</div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">所属地区</div>
+            <div class="field-value">广东省东莞市</div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">登记机关</div>
+            <div class="field-value">东莞市市场监督管理局</div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">行业分类</div>
+            <div class="field-value">
+              <div><span class="level-name">门类：</span>制造业</div>
+              <div><span class="level-name">大类：</span>专用设备制造业</div>
+              <div><span class="level-name">中类：</span>环保、邮政、社会公共服务及其他专用设备制造</div>
+              <div><span class="level-name">小类：</span>其他专用设备制造</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 企业经营信息 -->
+      <div class="field-group">
+        <div class="field-group-title">企业经营信息</div>
+        <div class="field-grid">
+          <div class="field-item">
+            <div class="field-label">企业规模</div>
+            <div class="field-value">微型企业</div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">是否是小微企业</div>
+            <div class="field-value">是</div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">上市信息</div>
+            <div class="field-value">未上市</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 社保参保信息 -->
+      <div class="field-group">
+        <div class="field-group-title">社保参保信息</div>
+        <div class="field-grid">
+          <div class="field-item">
+            <div class="field-label">养老保险人数</div>
+            <div class="field-value">12人</div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">医疗保险人数</div>
+            <div class="field-value">12人</div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">失业保险人数</div>
+            <div class="field-value">10人</div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">工伤保险人数</div>
+            <div class="field-value">15人</div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">生育保险人数</div>
+            <div class="field-value">8人</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 企业风险信息 -->
+      <div class="field-group">
+        <div class="field-group-title">企业风险信息</div>
+        <div class="field-grid">
+          <div class="field-item">
+            <div class="field-label">注销日期</div>
+            <div class="field-value empty">-</div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">注销原因</div>
+            <div class="field-value empty">-</div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">吊销日期</div>
+            <div class="field-value empty">-</div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">吊销原因</div>
+            <div class="field-value empty">-</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 接口技术说明 -->
+      <div class="tech-doc" id="qccTechDoc" onclick="toggleTechDoc('qccTechDoc')">
+        <div class="tech-doc-header">
+          <span>接口技术说明（开发参考）</span>
+          <span class="tech-doc-arrow">▼</span>
+        </div>
+        <div class="tech-doc-body">
+          <div class="tech-doc-section">
+            <div class="tech-doc-section-title">接口费用汇总</div>
+            <div class="tech-doc-text">本次查询共调用8个启信宝接口，同一接口只计费一次，合计0.86元/次。</div>
+            <ul class="tech-doc-fee-list">
+              <li>模糊搜索（1.31）：0.01元</li>
+              <li>工商照面（1.41）：0.15元</li>
+              <li>社保信息（3.3）：0.10元</li>
+              <li>企业行业-国民经济分类（79.13）：0.10元</li>
+              <li>企业性质-资本背景（79.11）：0.10元</li>
+              <li>股票信息（43.3）：0.10元</li>
+              <li>小微企业（51.39）：0.20元</li>
+              <li>企业规模（79.12）：0.10元</li>
+            </ul>
+          </div>
+          <div class="tech-doc-section">
+            <div class="tech-doc-section-title">字段与接口对应表</div>
+            <div class="tech-doc-table-wrap">
+              <table class="tech-doc-table">
+                <thead>
+                  <tr><th>序号</th><th>字段名称</th><th>所属分组</th><th>接口名称</th><th>接口ID</th><th>返回参数名</th><th>类型</th><th>单价</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>1</td><td>企业名称</td><td>企业基本信息</td><td>模糊搜索</td><td>1.31</td><td>name</td><td>String</td><td>0.01元</td></tr>
+                  <tr><td>2</td><td>组织机构代码</td><td>企业基本信息</td><td>工商照面</td><td>1.41</td><td>orgNo</td><td>String</td><td>0.15元</td></tr>
+                  <tr><td>3</td><td>企业类型</td><td>企业基本信息</td><td>工商照面</td><td>1.41</td><td>econKind</td><td>String</td><td>0.15元</td></tr>
+                  <tr><td>4</td><td>企业性质</td><td>企业基本信息</td><td>工商照面</td><td>1.41</td><td>categoryNew / type_new</td><td>String</td><td>0.15元</td></tr>
+                  <tr><td>5</td><td>组织机构分类（经济类型）</td><td>企业基本信息</td><td>企业性质（资本背景）</td><td>79.11</td><td>tag_name</td><td>String</td><td>0.10元</td></tr>
+                  <tr><td>6</td><td>所属地区</td><td>企业基本信息</td><td>工商照面</td><td>1.41</td><td>address + districtCode</td><td>String</td><td>0.15元</td></tr>
+                  <tr><td>7</td><td>登记机关</td><td>企业基本信息</td><td>工商照面</td><td>1.41</td><td>belongOrg</td><td>String</td><td>0.15元</td></tr>
+                  <tr><td>8</td><td>行业分类</td><td>企业基本信息</td><td>企业行业（国民经济分类）</td><td>79.13</td><td>industry_name_l1~l4（四级）</td><td>String</td><td>0.10元</td></tr>
+                  <tr><td>9</td><td>企业规模</td><td>企业经营信息</td><td>企业规模</td><td>79.12</td><td>以接口实际返回为准</td><td>String</td><td>0.10元</td></tr>
+                  <tr><td>10</td><td>是否是小微企业</td><td>企业经营信息</td><td>小微企业</td><td>51.39</td><td>以接口实际返回为准</td><td>String</td><td>0.20元</td></tr>
+                  <tr><td>11</td><td>上市信息</td><td>企业经营信息</td><td>股票信息</td><td>43.3</td><td>list数组</td><td>Array</td><td>0.10元</td></tr>
+                  <tr><td>12</td><td>养老保险人数</td><td>社保参保信息</td><td>社保信息</td><td>3.3</td><td>basic_endowment_</td><td>String</td><td>0.10元</td></tr>
+                  <tr><td>13</td><td>医疗保险人数</td><td>社保参保信息</td><td>社保信息</td><td>3.3</td><td>insurance_num</td><td>String</td><td>0.10元</td></tr>
+                  <tr><td>14</td><td>失业保险人数</td><td>社保参保信息</td><td>社保信息</td><td>3.3</td><td>unemployment_num</td><td>String</td><td>0.10元</td></tr>
+                  <tr><td>15</td><td>工伤保险人数</td><td>社保参保信息</td><td>社保信息</td><td>3.3</td><td>injury_insurance_nu</td><td>String</td><td>0.10元</td></tr>
+                  <tr><td>16</td><td>生育保险人数</td><td>社保参保信息</td><td>社保信息</td><td>3.3</td><td>birth_num</td><td>String</td><td>0.10元</td></tr>
+                  <tr><td>17</td><td>注销日期</td><td>企业风险信息</td><td>工商照面</td><td>1.41</td><td>endDate</td><td>String</td><td>0.15元</td></tr>
+                  <tr><td>18</td><td>注销原因</td><td>企业风险信息</td><td>工商照面</td><td>1.41</td><td>logout_reason</td><td>String</td><td>0.15元</td></tr>
+                  <tr><td>19</td><td>吊销日期</td><td>企业风险信息</td><td>工商照面</td><td>1.41</td><td>revoke_date</td><td>String</td><td>0.15元</td></tr>
+                  <tr><td>20</td><td>吊销原因</td><td>企业风险信息</td><td>工商照面</td><td>1.41</td><td>revoke_reason</td><td>String</td><td>0.15元</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="tech-doc-section">
+            <div class="tech-doc-section-title">调用说明</div>
+            <div class="tech-doc-text">
+              调用顺序：先调用模糊搜索获取企业名称匹配，再并行调用其余7个接口。<br>
+              数据来源：启信宝开放平台（https://data.qixin.com/）<br>
+              备注：企业规模（79.12）和小微企业（51.39）的返回参数名以接口实际返回文档为准。
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 天眼查弹窗 -->
+<div class="modal-mask" id="tycModal" onclick="closeModalMask(event, 'tycModal')">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title">企业工商信息</div>
+        <div class="modal-subtitle">数据来源：天眼查</div>
+      </div>
+      <button class="modal-close" onclick="closeModal('tycModal')">×</button>
+    </div>
+    <div class="modal-body">
+      <!-- 企业基本信息 -->
+      <div class="field-group">
+        <div class="field-group-title">企业基本信息</div>
+        <div class="field-grid">
+          <div class="field-item">
+            <div class="field-label">企业名称</div>
+            <div class="field-value">贵州力源液压股份有限公司</div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">组织机构代码</div>
+            <div class="field-value">21443414-6</div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">企业类型</div>
+            <div class="field-value">其他股份有限公司(上市)</div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">企业性质</div>
+            <div class="field-value">民营企业</div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">组织机构分类（经济类型）</div>
+            <div class="field-value">内资企业</div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">所属地区</div>
+            <div class="field-value">贵州省贵阳市南明区</div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">登记机关</div>
+            <div class="field-value">贵阳市市场监督管理局双龙分局</div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">行业分类</div>
+            <div class="field-value">
+              <div><span class="level-name">门类：</span>制造业</div>
+              <div><span class="level-name">大类：</span>铁路、船舶、航空航天和其他运输设备制造业</div>
+              <div><span class="level-name">中类：</span>航空相关设备制造</div>
+              <div><span class="level-name">小类：</span>航空、航天器及设备制造</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 企业经营信息 -->
+      <div class="field-group">
+        <div class="field-group-title">企业经营信息</div>
+        <div class="field-grid">
+          <div class="field-item">
+            <div class="field-label">企业规模</div>
+            <div class="field-value">参保人数9429人（2024年报）</div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">是否是小微企业</div>
+            <div class="field-value">否</div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">上市信息</div>
+            <div class="field-value">A股（上市）</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 社保参保信息 -->
+      <div class="field-group">
+        <div class="field-group-title">社保参保信息</div>
+        <div class="field-grid">
+          <div class="field-item">
+            <div class="field-label">参保人数</div>
+            <div class="field-value">9429人（数据来源：2024年报）</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 企业风险信息 -->
+      <div class="field-group">
+        <div class="field-group-title">企业风险信息</div>
+        <div class="field-grid">
+          <div class="field-item">
+            <div class="field-label">注销日期</div>
+            <div class="field-value empty">-</div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">注销原因</div>
+            <div class="field-value empty">-</div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">吊销日期</div>
+            <div class="field-value empty">-</div>
+          </div>
+          <div class="field-item">
+            <div class="field-label">吊销原因</div>
+            <div class="field-value empty">-</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 接口技术说明 -->
+      <div class="tech-doc" id="tycTechDoc" onclick="toggleTechDoc('tycTechDoc')">
+        <div class="tech-doc-header">
+          <span>接口技术说明（开发参考）</span>
+          <span class="tech-doc-arrow">▼</span>
+        </div>
+        <div class="tech-doc-body">
+          <div class="tech-doc-section">
+            <div class="tech-doc-section-title">接口费用汇总</div>
+            <div class="tech-doc-text">本次查询共调用2个天眼查接口，同一接口只计费一次，合计0.4元/次。</div>
+            <ul class="tech-doc-fee-list">
+              <li>企业基本信息（含企业联系方式）（818）：0.2元</li>
+              <li>组织机构（1168）：0.2元</li>
+            </ul>
+          </div>
+          <div class="tech-doc-section">
+            <div class="tech-doc-section-title">字段与接口对应表</div>
+            <div class="tech-doc-table-wrap">
+              <table class="tech-doc-table">
+                <thead>
+                  <tr><th>序号</th><th>字段名称</th><th>所属分组</th><th>接口名称</th><th>接口ID</th><th>返回参数名</th><th>类型</th><th>单价</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>1</td><td>企业名称</td><td>企业基本信息</td><td>企业基本信息</td><td>818</td><td>name</td><td>String</td><td>0.2元</td></tr>
+                  <tr><td>2</td><td>组织机构代码</td><td>企业基本信息</td><td>企业基本信息</td><td>818</td><td>orgNumber</td><td>String</td><td>0.2元</td></tr>
+                  <tr><td>3</td><td>企业类型</td><td>企业基本信息</td><td>企业基本信息/组织机构</td><td>818/1168</td><td>companyOrgType / orgTypes</td><td>String</td><td>0.2元</td></tr>
+                  <tr><td>4</td><td>企业性质</td><td>企业基本信息</td><td>组织机构</td><td>1168</td><td>economyTypes</td><td>String</td><td>0.2元</td></tr>
+                  <tr><td>5</td><td>组织机构分类（经济类型）</td><td>企业基本信息</td><td>组织机构</td><td>1168</td><td>economyTypes</td><td>String</td><td>0.2元</td></tr>
+                  <tr><td>6</td><td>所属地区</td><td>企业基本信息</td><td>企业基本信息</td><td>818</td><td>regLocation + base + district</td><td>String</td><td>0.2元</td></tr>
+                  <tr><td>7</td><td>登记机关</td><td>企业基本信息</td><td>企业基本信息</td><td>818</td><td>regInstitute</td><td>String</td><td>0.2元</td></tr>
+                  <tr><td>8</td><td>行业分类</td><td>企业基本信息</td><td>企业基本信息</td><td>818</td><td>industryAll（四级）</td><td>Object</td><td>0.2元</td></tr>
+                  <tr><td>9</td><td>企业规模</td><td>企业经营信息</td><td>企业基本信息</td><td>818</td><td>socialStaffNum</td><td>Number</td><td>0.2元</td></tr>
+                  <tr><td>10</td><td>是否是小微企业</td><td>企业经营信息</td><td>企业基本信息</td><td>818</td><td>isMicroEnt</td><td>Number</td><td>0.2元</td></tr>
+                  <tr><td>11</td><td>上市信息</td><td>企业经营信息</td><td>企业基本信息</td><td>818</td><td>bondType</td><td>String</td><td>0.2元</td></tr>
+                  <tr><td>12</td><td>参保人数</td><td>社保参保信息</td><td>企业基本信息</td><td>818</td><td>socialStaffNum</td><td>Number</td><td>0.2元</td></tr>
+                  <tr><td>13</td><td>注销日期</td><td>企业风险信息</td><td>企业基本信息</td><td>818</td><td>cancelDate</td><td>String</td><td>0.2元</td></tr>
+                  <tr><td>14</td><td>注销原因</td><td>企业风险信息</td><td>企业基本信息</td><td>818</td><td>cancelReason</td><td>String</td><td>0.2元</td></tr>
+                  <tr><td>15</td><td>吊销日期</td><td>企业风险信息</td><td>企业基本信息</td><td>818</td><td>revokeDate</td><td>String</td><td>0.2元</td></tr>
+                  <tr><td>16</td><td>吊销原因</td><td>企业风险信息</td><td>企业基本信息</td><td>818</td><td>revokeReason</td><td>String</td><td>0.2元</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="tech-doc-section">
+            <div class="tech-doc-section-title">调用说明</div>
+            <div class="tech-doc-text">
+              调用顺序：先调用企业基本信息（818）获取大部分字段，再调用组织机构（1168）获取经济类型。<br>
+              数据来源：天眼查开放平台（https://www.tianyancha.com/data）<br>
+              备注：参保人数来自企业年报（numberSource字段标注年份）；上市信息通过bondType和companyOrgType中的"(上市)"判断。
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function openModal(id) {
+  document.getElementById(id).classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('show');
+  document.body.style.overflow = '';
+}
+function closeModalMask(event, id) {
+  if (event.target.classList.contains('modal-mask')) {
+    closeModal(id);
+  }
+}
+function toggleTechDoc(id) {
+  event.stopPropagation();
+  document.getElementById(id).classList.toggle('open');
+}
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    document.querySelectorAll('.modal-mask.show').forEach(function(mask) {
+      mask.classList.remove('show');
+    });
+    document.body.style.overflow = '';
+  }
+});
+</script>
+
+</body>
+</html>
